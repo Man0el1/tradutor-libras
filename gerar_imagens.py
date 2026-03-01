@@ -1,32 +1,30 @@
 import cv2
 import os
 
-PASTA_DATA = './data'
-if not os.path.exists(PASTA_DATA):
-  os.makedirs(PASTA_DATA)
+DATA_DIR = './data'
+if not os.path.exists(DATA_DIR):
+  os.makedirs(DATA_DIR)
 
-num_pastas = 26
-qunt_fotos = 50
+quant_images = 100
 
-alfabeto = []
-for letra in range(65,91):
-  alfabeto.append(chr(letra))
+alphabet = []
+for letter in range(65,91):
+  alphabet.append(chr(letter))
 
 cap = cv2.VideoCapture(0)
 
-for letra in alfabeto:
-  if not os.path.exists(os.path.join(PASTA_DATA, letra)): 
-    os.makedirs(os.path.join(PASTA_DATA, letra)) # exemplo : ./data/A
+for letter in alphabet:
+  if not os.path.exists(os.path.join(DATA_DIR, letter)): 
+    os.makedirs(os.path.join(DATA_DIR, letter)) # exemple : ./data/A
     
-  concluido = False
-  pular = False
-  
+  complete = False
+  skip = False
   while True:
     ret, frame = cap.read()
     frame = cv2.flip(frame, 1)
     cv2.putText(
       frame,
-      "Colhendo dados para " + letra + ": Q para continuar, P para pular e S para sair.",
+      "Collecting data for " + letter + ": Q to continue, S to skip letter, E to exit.",
       (10, 50),
       cv2.FONT_HERSHEY_SIMPLEX,
       0.55,
@@ -38,27 +36,27 @@ for letra in alfabeto:
     key = cv2.waitKey(5)
     if key == ord('q'):
       break
-    if key == ord('p'):
-      pular = True
-      break
     if key == ord('s'):
-      concluido = True
+      skip = True
+      break
+    if key == ord('e'):
+      complete = True
       break
     
-  if pular:
+  if skip:
     continue
-  if concluido:
+  if complete:
     break
   
-  contador = 0
-  
-  while contador < qunt_fotos:
+  counter = 0
+  while counter < quant_images * 2:
     ret, frame = cap.read()
     frame = cv2.flip(frame, 1)
     cv2.imshow('frame', frame)
     cv2.waitKey(25)
-    cv2.imwrite(os.path.join(PASTA_DATA, letra, '{}.jpg'.format(contador + 1)), frame)
-    contador += 1
+    cv2.imwrite(os.path.join(DATA_DIR, letter, '{}.jpg'.format(counter + 1)), frame)
+    cv2.imwrite(os.path.join(DATA_DIR, letter, '{}.jpg'.format(counter + 2)), cv2.flip(frame, 1))
+    counter += 2
 
 cap.release()
 cv2.destroyAllWindows()
