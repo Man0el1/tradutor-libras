@@ -10,7 +10,7 @@ data_clean = []
 labels_clean = []
 
 for sample, label in zip(data_dictionary['data'], data_dictionary['labels']):
-  if len(sample) == 42:
+  if len(sample) == 42: # 21 pontos * 2 coordenadas (x e y)
     data_clean.append(sample)
     labels_clean.append(label)
 
