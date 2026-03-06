@@ -28,32 +28,27 @@ while True:
   
   if results.multi_hand_landmarks:
     for hand in results.multi_hand_landmarks:
-      mp_drawing.draw_landmarks(
-        frame,
-        hand,
-        mp_hands.HAND_CONNECTIONS,
-        mp_drawing_styles.get_default_hand_landmarks_style(),
-        mp_drawing_styles.get_default_hand_connections_style()
-      )
-      
-    for hand in results.multi_hand_landmarks:
       for dot in range(len(hand.landmark)):
-        data_aux.append(hand.landmark[dot].x)
-        data_aux.append(hand.landmark[dot].y)
         x_.append(hand.landmark[dot].x)
         y_.append(hand.landmark[dot].y)
-        
-    x1 = int(min(x_) * W)
-    y1 = int(min(y_) * H)
-    
-    x2 = int(max(x_) * W)
-    y2 = int(max(y_) * H)
+
+      min_x = min(x_)
+      min_y = min(y_)
+      max_x = max(x_)
+      max_y = max(y_)
+
+      for dot in range(len(hand.landmark)):
+        data_aux.append((hand.landmark[dot].x - min_x) / (max_x - min_x))
+        data_aux.append((hand.landmark[dot].y - min_y) / (max_y - min_y))
     
     prediction = model.predict([np.asarray(data_aux)])
-    predicted_letter = prediction[0]
+    prediction_prob = model.predict_proba([np.asarray(data_aux)])
     
-    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
-    cv2.putText(frame, predicted_letter, (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+    predicted_letter = prediction[0]
+    confidence = str(int(np.max(prediction_prob) * 100))
+
+    cv2.putText(frame, predicted_letter, (150, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+    cv2.putText(frame, confidence + "%", (60, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
   
   cv2.imshow('frame', frame)
   key = cv2.waitKey(5)

@@ -23,7 +23,7 @@ for letter in os.listdir(DATA_DIR):
     results = hands.process(img_rgb)
     print(letter + img_path)
     
-    if results.multi_hand_landmarks: #alterar para apenas 1 mão
+    if results.multi_hand_landmarks: 
       for hand in results.multi_hand_landmarks:
         for dot in range(len(hand.landmark)):
           x_.append(hand.landmark[dot].x)
